@@ -1,8 +1,10 @@
+using IcePiecesGames.Framework.Core.Events;
 using IcePiecesGames.Framework.Core.Lifecycle;
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+[DependsOn(typeof(EventBusRoot))]
 public class InputRoot : FrameworkRoot,IComposable,IRunnable, IShutdownable
 {
     public enum InputMode{ Player,Terminal, Disabled }
@@ -31,10 +33,13 @@ public class InputRoot : FrameworkRoot,IComposable,IRunnable, IShutdownable
     public event Action NextCamera;
     public event Action PreviousCamera;
 
+    private IEventBus _eventBus;
+    private IDisposable _openTerminalSubscription;
+    private IDisposable _closeTerminalSubscription;
+
     public void Compose()
-    {
-        if(_inputActions == null)
-            throw new InvalidOperationException("InputActionAsset is not assigned.");
+    {       
+        _eventBus = Context.GetService<IEventBus>();
 
         _inputActions = Instantiate(_inputActions);
 
@@ -53,8 +58,9 @@ public class InputRoot : FrameworkRoot,IComposable,IRunnable, IShutdownable
     public void Run()
     {
         SubscribeToEvents();
-        CurrentMode = InputMode.Disabled;
 
+        CurrentMode = InputMode.Disabled;
+        ToggleCursor(false);
         if (_playerMap != null)
             SetMode(InputMode.Player);
     }
@@ -76,11 +82,8 @@ public class InputRoot : FrameworkRoot,IComposable,IRunnable, IShutdownable
                 _terminalMap.Enable();
                 break;
         }
-
-        bool cursorLocked = mode == InputMode.Player;
-
-        Cursor.lockState = cursorLocked ? CursorLockMode.Locked : CursorLockMode.None;
-        Cursor.visible = !cursorLocked;
+       
+        ToggleCursor(mode == InputMode.Player ? false : true);
     }
 
     private void OnInteract(InputAction.CallbackContext context)
@@ -103,6 +106,16 @@ public class InputRoot : FrameworkRoot,IComposable,IRunnable, IShutdownable
         PreviousCamera?.Invoke();
     }
 
+    #region >>> MOUSE CURSOR
+
+    private void ToggleCursor(bool value)
+    {
+        Debug.Log(value);
+        Cursor.lockState = value? CursorLockMode.None : CursorLockMode.Locked;
+        Cursor.visible = value;
+    }
+
+    #endregion
     #region >>> EVENTS
 
     private void SubscribeToEvents()
@@ -111,6 +124,11 @@ public class InputRoot : FrameworkRoot,IComposable,IRunnable, IShutdownable
         _exitAction.performed += OnExit;
         _nextCameraAction.performed += OnNextCamera;
         _previousCameraAction.performed += OnPreviousCamera;
+
+        if(_openTerminalSubscription == null)
+            _openTerminalSubscription = _eventBus.Subscribe<TerminalOpenEvent>(OnTerminalOpend);
+        if (_closeTerminalSubscription == null) 
+            _closeTerminalSubscription = _eventBus.Subscribe<TerminalCloseEvent>(OnTerminalClosed);
     }
 
     private void UnsubscribeToEvents()
@@ -119,6 +137,22 @@ public class InputRoot : FrameworkRoot,IComposable,IRunnable, IShutdownable
         _exitAction.performed -= OnExit;
         _nextCameraAction.performed -= OnNextCamera;
         _previousCameraAction.performed -= OnPreviousCamera;
+
+        _openTerminalSubscription?.Dispose();
+        _openTerminalSubscription = null;
+
+        _closeTerminalSubscription?.Dispose();
+        _closeTerminalSubscription = null;
+    }
+
+    private void OnTerminalOpend(TerminalOpenEvent eventData)
+    {
+        SetMode(InputRoot.InputMode.Terminal);       
+    }
+
+    private void OnTerminalClosed(TerminalCloseEvent eventData)
+    {
+        SetMode(InputRoot.InputMode.Player);        
     }
     #endregion
 
@@ -127,10 +161,8 @@ public class InputRoot : FrameworkRoot,IComposable,IRunnable, IShutdownable
         _playerMap?.Disable();
         _terminalMap?.Disable();
 
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
-
-        UnsubscribeToEvents();
+        ToggleCursor(true);
         Destroy(_inputActions);
+        UnsubscribeToEvents();
     }
 }

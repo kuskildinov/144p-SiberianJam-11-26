@@ -1,44 +1,49 @@
-
 using IcePiecesGames.Framework.Core.Lifecycle;
+using IcePiecesGames.Framework.Core.Events;
 using UnityEngine;
+using Unity.Cinemachine;
 
 [DependsOn(typeof(InputRoot))]
-[DependsOn(typeof(PlayerRoot))]
+[DependsOn(typeof(EventBusRoot))]
 public class TerminalRoot : FrameworkRoot, IComposable, IRunnable, IShutdownable
-{
-    [Header("Components")]
-    [SerializeField] private CCTVController _cctvController;
-    [SerializeField] private GameObject _terminalUI;
+{    
     [Header("Terminal")]
     [SerializeField] private ComputerTerminal _terminal;
-    [SerializeField] private GameObject _terminalCam;
-    [Header("Monster")]
-    [SerializeField] private MonsterController _monsterController;
+    [SerializeField] private CinemachineCamera _terminalCam;
+    [SerializeField] private MiniGameVictoryView _victoryView;
+    [Header("Room")]
+    [SerializeField] private string _doorCode = "4826";
 
     private InputRoot _inputRoot;
-    private PlayerRoot _playerRoot;
+    
+    private IEventBus _eventBus;
+    private MiniGamesService _miniGamesService;
 
     private bool _isOpened;
+    private bool _miniGameStarted;
 
     public bool IsOpened => _isOpened;
+    public string DoorCode => _doorCode;
 
     public void Compose()
     {
         _inputRoot = Context.GetRoot<InputRoot>();
-        _playerRoot = Context.GetRoot<PlayerRoot>();
 
-        _cctvController.Initialize();
+        _miniGamesService = new MiniGamesService();
+        Context.RegisterService<MiniGamesService>(_miniGamesService);
+
+        _eventBus = Context.GetService<IEventBus>();
+               
         _terminal.Initialize(this);
-        _monsterController.Initialize();
+        _victoryView.Initialize(this);
     }
 
     public void Run()
     {
         SubscribeToEvents();
+    }    
 
-        if (_terminalUI != null)
-            _terminalUI.SetActive(false);
-    }
+    #region >>> TERMINAL
 
     public void OpenTerminal()
     {
@@ -46,16 +51,10 @@ public class TerminalRoot : FrameworkRoot, IComposable, IRunnable, IShutdownable
             return;
 
         _isOpened = true;
+        ToggleTerminalCam(true);
+        TryStartMiniGame();
 
-        _playerRoot.TogglePlayerActivation(false);
-        _inputRoot.SetMode(InputRoot.InputMode.Terminal);
-
-        if (_terminalUI != null)
-            _terminalUI.SetActive(true);
-
-        _cctvController.Activate();
-        _terminalCam.gameObject.SetActive(true);
-        _monsterController.StartMoving();
+        _eventBus.Publish(new TerminalOpenEvent());
     }
 
     public void CloseTerminal()
@@ -63,60 +62,79 @@ public class TerminalRoot : FrameworkRoot, IComposable, IRunnable, IShutdownable
         if (!_isOpened)
             return;
 
-        _monsterController.StopMoving();
-        _cctvController.Deactivate();
-
-        if (_terminalUI != null)
-            _terminalUI.SetActive(false);
-
-        _inputRoot.SetMode(InputRoot.InputMode.Player);
-        _playerRoot.TogglePlayerActivation(true);
-
         _isOpened = false;
-        _terminalCam.gameObject.SetActive(false);
+        ToggleTerminalCam(false);
+        
+        _eventBus.Publish(new TerminalCloseEvent());
+    } 
+
+    private void ToggleTerminalCam(bool value)
+    {
+        _terminalCam.Priority = value ? 20 : 0;
     }
 
-    public void Shutdown()
+    public void TryStartMiniGame()
     {
-        UnsubscribeToEvents();
-                   
-        if (_isOpened)
-            CloseTerminal();
+        if (_miniGameStarted)
+            return;
+
+        _miniGameStarted = true;
+        _miniGamesService.StartGame();
     }
 
-    private void OnPlayerCaught()
-    {
-        _monsterController.StopMoving();
-
-        Debug.Log("GAME OVER: Monster caught the player!");
-
+    public void OnContinueClicked()
+    {       
         CloseTerminal();
-
-        // Позже подключим GameRoot и экран проигрыша.
+        //_roomRoot.ActivateLock();
     }
 
+    private void OnGameCompleted()
+    {
+        _victoryView.Open();
+    }
+
+    #endregion    
     #region >>> EVETNS
 
     private void SubscribeToEvents()
     {
-        _inputRoot.TerminalExited += CloseTerminal;
-        _inputRoot.NextCamera += _cctvController.NextCamera;
-        _inputRoot.PreviousCamera += _cctvController.PreviousCamera;
-
-        _monsterController.PlayerCaught += OnPlayerCaught;
+        _inputRoot.TerminalExited += CloseTerminal;       
+        _miniGamesService.Completed += OnGameCompleted;
     }
 
     private void UnsubscribeToEvents()
     {
         if (_inputRoot != null)
-        {
             _inputRoot.TerminalExited -= CloseTerminal;
-            _inputRoot.NextCamera -= _cctvController.NextCamera;
-            _inputRoot.PreviousCamera -= _cctvController.PreviousCamera;
-        }
 
-        _monsterController.PlayerCaught -= OnPlayerCaught;
+        _miniGamesService.Completed -= OnGameCompleted;
+    }
+
+    private void OnPlayerCaught()
+    {
+        CloseTerminal();
     }
 
     #endregion
+
+    public void Shutdown()
+    {
+        UnsubscribeToEvents();
+        ToggleTerminalCam(false);
+
+        _isOpened = false;
+
+        _victoryView.Dispose();
+        _miniGamesService.Dispose();
+    }
+}
+
+public readonly struct TerminalOpenEvent
+{
+
+}
+
+public readonly struct TerminalCloseEvent
+{
+
 }

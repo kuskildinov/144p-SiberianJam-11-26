@@ -1,7 +1,8 @@
+using System;
 using Unity.Cinemachine;
 using UnityEngine;
 
-public class PlayerInteraction : MonoBehaviour
+public class PlayerInteraction : MonoBehaviour, IDisposable
 {
     [Header("Settings")]
     [SerializeField] private float _interactionDistance = 2.5f;
@@ -42,8 +43,7 @@ public class PlayerInteraction : MonoBehaviour
         {
            if(hit.transform.TryGetComponent<IInteractable>(out IInteractable interactable))
             {
-                _currentInteractable = interactable;
-                Debug.Log(interactable);
+                _currentInteractable = interactable;              
             }
         }
     }
@@ -74,8 +74,8 @@ public class PlayerInteraction : MonoBehaviour
     }
 
     #endregion
-
-    private void OnDestroy()
+   
+    public void Dispose()
     {
         UnsubscribeToEvents();
     }

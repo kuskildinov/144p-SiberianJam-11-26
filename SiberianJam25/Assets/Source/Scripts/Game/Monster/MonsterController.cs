@@ -11,13 +11,13 @@ public class MonsterController : MonoBehaviour
     [Header("Visual")]
     [SerializeField] private GameObject _monsterVisual;
 
+    private RoomMonsterRoot _root;
     private bool _isMoving;
     private bool _hasReachedPlayer;
 
-    public event Action PlayerCaught;
-
     public bool IsMoving => _isMoving;
     public bool HasReachedPlayer => _hasReachedPlayer;
+    
     public float Progress
     {
         get
@@ -32,8 +32,10 @@ public class MonsterController : MonoBehaviour
         }
     }
 
-    public void Initialize()
+    public void Initialize(RoomMonsterRoot root)
     {
+        _root = root;
+
         ResetMonster();
     }
 
@@ -42,18 +44,14 @@ public class MonsterController : MonoBehaviour
         if (!_isMoving || _hasReachedPlayer)
             return;
 
-        transform.position = Vector3.MoveTowards(
-            transform.position,
-            _endPoint.position,
-            _moveSpeed * Time.deltaTime
-        );
+        transform.position = Vector3.MoveTowards(transform.position,_endPoint.position,_moveSpeed * Time.deltaTime);
 
         if (Vector3.Distance(transform.position, _endPoint.position) <= 0.01f)
         {
             _hasReachedPlayer = true;
             _isMoving = false;
 
-            PlayerCaught?.Invoke();
+            _root.OnPlayerCaught();
         }
     }
 

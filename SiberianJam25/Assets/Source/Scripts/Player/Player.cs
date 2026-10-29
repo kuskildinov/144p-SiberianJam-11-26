@@ -1,8 +1,9 @@
 using UnityEngine;
 using Unity.Cinemachine;
+using System;
 
 [RequireComponent(typeof(CharacterController))]
-public class Player : MonoBehaviour
+public class Player : MonoBehaviour, IDisposable
 {
     [Header("Components")]
     [SerializeField] private PlayerMovment _movment;
@@ -17,7 +18,7 @@ public class Player : MonoBehaviour
 
     public bool IsActive => _isActive;
     public CinemachineCamera PlayerCam => _playerCam;
-    public CharacterController Controller => _controller;
+    public CharacterController Controller => _controller;    
 
     public void Initialize(PlayerRoot root, InputRoot inputRoot)
     {
@@ -38,4 +39,9 @@ public class Player : MonoBehaviour
 
 
     #endregion
+
+    public void Dispose()
+    {
+        _interaction.Dispose();
+    }
 }
