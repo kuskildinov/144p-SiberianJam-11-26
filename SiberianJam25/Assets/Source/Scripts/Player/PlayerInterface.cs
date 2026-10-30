@@ -6,6 +6,7 @@ public class PlayerInterface : MonoBehaviour, IDisposable
 {
     [SerializeField] private GameObject _panel;
     [SerializeField] private InteractionInfoPanel _interactionInfo;
+    [SerializeField] private GameOverPanel _gameOverPanel;
 
     private PlayerRoot _root;
 
@@ -13,10 +14,11 @@ public class PlayerInterface : MonoBehaviour, IDisposable
     private IDisposable _interactorDetectedSubscription;
     private IDisposable _interactorLostSubscription;
 
-    public void Initialize(PlayerRoot root, IEventBus eventBus)
+    public void Initialize(PlayerRoot root, RoomRoot roomRoot, IEventBus eventBus)
     {
         _root = root;
         _eventBus = eventBus;
+        _gameOverPanel.Initialize(roomRoot);
 
         ToggleInteractionInfo(false);
         SubscribeToEvents();
@@ -34,6 +36,14 @@ public class PlayerInterface : MonoBehaviour, IDisposable
     public void ToggleInteractionInfo(bool value, string info = "")
     {
         _interactionInfo.ToggleVisibility(value,info);
+    }
+
+    #endregion
+    #region >>> GAME OVER
+
+    public void OnGameOver()
+    {
+        _gameOverPanel.Open();
     }
 
     #endregion
@@ -72,5 +82,7 @@ public class PlayerInterface : MonoBehaviour, IDisposable
     public void Dispose()
     {
         UnsubscribeFromEvents();
+
+        _gameOverPanel.Dispose();
     }
 }

@@ -11,18 +11,21 @@ public class PlayerRoot : FrameworkRoot, IComposable,IRunnable,IShutdownable
     [SerializeField] private PlayerInterface _interface;
 
     private InputRoot _inputRoot;
+    private RoomRoot _roomRoot;
 
     private IEventBus _eventBus;
     private IDisposable _openTerminalSubscription;
     private IDisposable _closeTerminalSubscription;
+    private IDisposable _gameOverSubscription;
 
     public void Compose()
     {
         _inputRoot = Context.GetRoot<InputRoot>();
+        _roomRoot = Context.GetRoot<RoomRoot>();
         _eventBus = Context.GetService<IEventBus>();
 
         _player.Initialize(this, _inputRoot, _eventBus);
-        _interface.Initialize(this, _eventBus);
+        _interface.Initialize(this, _roomRoot,_eventBus);
     }
 
     public void Run()
@@ -56,6 +59,8 @@ public class PlayerRoot : FrameworkRoot, IComposable,IRunnable,IShutdownable
             _openTerminalSubscription = _eventBus.Subscribe<TerminalOpenEvent>(OnTerminalOpend);
         if (_closeTerminalSubscription == null)
             _closeTerminalSubscription = _eventBus.Subscribe<TerminalCloseEvent>(OnTerminalClosed);
+        if (_gameOverSubscription == null)
+            _gameOverSubscription = _eventBus.Subscribe<PlayerCaughtEvent>(OnGameOver);
     }
 
     private void UnSubscribeToEvents()
@@ -65,6 +70,9 @@ public class PlayerRoot : FrameworkRoot, IComposable,IRunnable,IShutdownable
 
         _closeTerminalSubscription?.Dispose();
         _closeTerminalSubscription = null;
+
+        _gameOverSubscription?.Dispose();
+        _gameOverSubscription = null;
     }
 
     private void OnTerminalOpend(TerminalOpenEvent eventData)
@@ -77,6 +85,13 @@ public class PlayerRoot : FrameworkRoot, IComposable,IRunnable,IShutdownable
     {
         TogglePlayerActivation(true);
         ToggleInterfaceVisual(true);
+    }
+
+    private void OnGameOver(PlayerCaughtEvent eventData)
+    {
+        TogglePlayerActivation(false);
+
+        _interface.OnGameOver();
     }
 
     #endregion
@@ -104,3 +119,5 @@ public readonly struct InteractorLostEvent
 {
 
 }
+
+

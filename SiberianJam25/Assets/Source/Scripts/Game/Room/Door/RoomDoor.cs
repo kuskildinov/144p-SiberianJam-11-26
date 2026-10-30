@@ -18,15 +18,20 @@ public class RoomDoor : MonoBehaviour, IDisposable
         _root = root;
         _eventBus = eventBus;
 
-        _view.Initilize();
+        _view.Initilize(this);
         _lock.Initialize(this);
 
         SubscribeToEvents();
     }
 
     public void OnCorrectCodeEntered()
+    {      
+        _view.IsActive = true;
+    }
+
+    public void TryOpenDoor()
     {
-        _root.OnDoorOpend();
+        _root.TryLoadNextLevel();
     }
 
     #region >>> EVENTS

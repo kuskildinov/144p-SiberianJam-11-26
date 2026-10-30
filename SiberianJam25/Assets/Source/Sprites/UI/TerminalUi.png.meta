@@ -197,7 +197,7 @@ TextureImporter:
         width: 225
         height: 91
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 64, y: 16, z: 45, w: 18}
       customData: 
       outline: []
@@ -206,6 +206,28 @@ TextureImporter:
       bones: []
       spriteID: b26420f14ce97fc48a94e52397bb52fe
       internalID: 1449684883
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TerminalUi_4
+      rect:
+        serializedVersion: 2
+        x: 984
+        y: 33
+        width: 284
+        height: 94
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5594de87129334a449a6b6f2b27fc321
+      internalID: -1076716929
       vertices: []
       indices: 
       edges: []
@@ -230,6 +252,7 @@ TextureImporter:
       TerminalUi_1: -594752924
       TerminalUi_2: -2039896155
       TerminalUi_3: 1449684883
+      TerminalUi_4: -1076716929
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

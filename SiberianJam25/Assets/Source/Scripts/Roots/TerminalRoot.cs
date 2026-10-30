@@ -39,8 +39,6 @@ public class TerminalRoot : FrameworkRoot, IComposable, IRunnable, IShutdownable
         _startView.Initialize(this);
         _victoryView.Initialize(this);
         _cameraView.Initialize();
-
-       
     }
 
     public void Run()

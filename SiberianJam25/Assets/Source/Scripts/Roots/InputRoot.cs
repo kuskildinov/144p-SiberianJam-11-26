@@ -34,6 +34,7 @@ public class InputRoot : FrameworkRoot,IComposable,IRunnable, IShutdownable
     private IEventBus _eventBus;
     private IDisposable _openTerminalSubscription;
     private IDisposable _closeTerminalSubscription;
+    private IDisposable _gameOverSubscription;
 
     public void Compose()
     {       
@@ -112,6 +113,8 @@ public class InputRoot : FrameworkRoot,IComposable,IRunnable, IShutdownable
             _openTerminalSubscription = _eventBus.Subscribe<TerminalOpenEvent>(OnTerminalOpend);
         if (_closeTerminalSubscription == null) 
             _closeTerminalSubscription = _eventBus.Subscribe<TerminalCloseEvent>(OnTerminalClosed);
+        if (_gameOverSubscription == null)
+            _gameOverSubscription = _eventBus.Subscribe<PlayerCaughtEvent>(OnGameOver);
     }
 
     private void UnsubscribeToEvents()
@@ -124,6 +127,9 @@ public class InputRoot : FrameworkRoot,IComposable,IRunnable, IShutdownable
 
         _closeTerminalSubscription?.Dispose();
         _closeTerminalSubscription = null;
+
+        _gameOverSubscription?.Dispose();
+        _gameOverSubscription = null;
     }
 
     private void OnTerminalOpend(TerminalOpenEvent eventData)
@@ -134,6 +140,11 @@ public class InputRoot : FrameworkRoot,IComposable,IRunnable, IShutdownable
     private void OnTerminalClosed(TerminalCloseEvent eventData)
     {
         SetMode(InputRoot.InputMode.Player);        
+    }
+
+    private void OnGameOver(PlayerCaughtEvent eventData)
+    {
+        ToggleCursor(true);
     }
     #endregion
 
