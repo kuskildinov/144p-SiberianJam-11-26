@@ -13,7 +13,6 @@ public class MemoryGame : MiniGame
 
     [Header("UI")]
     [SerializeField] private Text _pairsText;
-    [SerializeField] private Text _attemptsText;
 
     [Header("Settings")]
     [SerializeField, Range(2, 8)] private int _pairsCount = 4;
@@ -27,7 +26,6 @@ public class MemoryGame : MiniGame
     private MemoryCardView _secondCard;
 
     private int _matchedPairs;
-    private int _attempts;
     private bool _isChecking;
     private bool _isCompleted;
 
@@ -58,8 +56,7 @@ public class MemoryGame : MiniGame
         _firstCard = null;
         _secondCard = null;
 
-        _matchedPairs = 0;
-        _attempts = 0;
+        _matchedPairs = 0;       
         _isChecking = false;
         _isCompleted = false;
 
@@ -164,8 +161,7 @@ public class MemoryGame : MiniGame
             return;
         }
 
-        _secondCard = card;
-        _attempts++;
+        _secondCard = card;       
         _isChecking = true;
 
         UpdateUI();
@@ -175,8 +171,7 @@ public class MemoryGame : MiniGame
 
     private void UpdateUI()
     {
-        _pairsText.text = $"ПАРЫ: {_matchedPairs}/{_cards.Count / 2}";
-        _attemptsText.text = $"ПОПЫТКИ: {_attempts}";
+        _pairsText.text = $"{_matchedPairs}/{_cards.Count / 2}";       
     }
 
     private IEnumerator CheckCards()

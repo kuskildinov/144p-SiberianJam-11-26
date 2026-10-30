@@ -20,9 +20,7 @@ public class InputRoot : FrameworkRoot,IComposable,IRunnable, IShutdownable
     private InputAction _interactAction;
     private InputAction _sprintAction;
 
-    private InputAction _exitAction;
-    private InputAction _nextCameraAction;
-    private InputAction _previousCameraAction;
+    private InputAction _exitAction;   
 
     public InputMode CurrentMode { get; private set; }
     public Vector2 Move => CurrentMode == InputMode.Player? _moveAction.ReadValue<Vector2>() : Vector2.zero;
@@ -50,9 +48,7 @@ public class InputRoot : FrameworkRoot,IComposable,IRunnable, IShutdownable
         _lookAction = _playerMap.FindAction("Look", true);
         _interactAction = _playerMap.FindAction("Interact", true);
 
-        _exitAction = _terminalMap.FindAction("Exit", true);
-        _nextCameraAction = _terminalMap.FindAction("NextCamera", true);
-        _previousCameraAction = _terminalMap.FindAction("PreviousCamera", true);       
+        _exitAction = _terminalMap.FindAction("Exit", true);        
     }
 
     public void Run()
@@ -95,17 +91,7 @@ public class InputRoot : FrameworkRoot,IComposable,IRunnable, IShutdownable
     {
         TerminalExited?.Invoke();
     }
-
-    private void OnNextCamera(InputAction.CallbackContext context)
-    {
-        NextCamera?.Invoke();
-    }
-
-    private void OnPreviousCamera(InputAction.CallbackContext context)
-    {
-        PreviousCamera?.Invoke();
-    }
-
+       
     #region >>> MOUSE CURSOR
 
     private void ToggleCursor(bool value)
@@ -120,9 +106,7 @@ public class InputRoot : FrameworkRoot,IComposable,IRunnable, IShutdownable
     private void SubscribeToEvents()
     {
         _interactAction.performed += OnInteract;
-        _exitAction.performed += OnExit;
-        _nextCameraAction.performed += OnNextCamera;
-        _previousCameraAction.performed += OnPreviousCamera;
+        _exitAction.performed += OnExit;       
 
         if(_openTerminalSubscription == null)
             _openTerminalSubscription = _eventBus.Subscribe<TerminalOpenEvent>(OnTerminalOpend);
@@ -134,9 +118,7 @@ public class InputRoot : FrameworkRoot,IComposable,IRunnable, IShutdownable
     {
         _interactAction.performed -= OnInteract;
         _exitAction.performed -= OnExit;
-        _nextCameraAction.performed -= OnNextCamera;
-        _previousCameraAction.performed -= OnPreviousCamera;
-
+       
         _openTerminalSubscription?.Dispose();
         _openTerminalSubscription = null;
 

@@ -11,8 +11,10 @@ public class TerminalRoot : FrameworkRoot, IComposable, IRunnable, IShutdownable
     [Header("Terminal")]
     [SerializeField] private ComputerTerminal _terminal;
     [SerializeField] private CinemachineCamera _terminalCam;
+    [SerializeField] private TerminalStartView _startView;
     [SerializeField] private MiniGameVictoryView _victoryView;
-   
+    [SerializeField] private TerminalCameraView _cameraView;
+
     private InputRoot _inputRoot;
     private RoomRoot _rootRoot;
     private IEventBus _eventBus;
@@ -34,11 +36,17 @@ public class TerminalRoot : FrameworkRoot, IComposable, IRunnable, IShutdownable
         _eventBus = Context.GetService<IEventBus>();
                
         _terminal.Initialize(this);
+        _startView.Initialize(this);
         _victoryView.Initialize(this);
+        _cameraView.Initialize();
+
+       
     }
 
     public void Run()
     {
+        _startView.Open();
+
         SubscribeToEvents();
     }    
 
@@ -51,9 +59,11 @@ public class TerminalRoot : FrameworkRoot, IComposable, IRunnable, IShutdownable
 
         _isOpened = true;
         ToggleTerminalCam(true);
-        TryStartMiniGame();
 
         _eventBus.Publish(new TerminalOpenEvent());
+
+        if (!_miniGameStarted)
+            _startView.Open();       
     }
 
     public void CloseTerminal()
@@ -63,7 +73,7 @@ public class TerminalRoot : FrameworkRoot, IComposable, IRunnable, IShutdownable
 
         _isOpened = false;
         ToggleTerminalCam(false);
-        
+        _cameraView.Close();
         _eventBus.Publish(new TerminalCloseEvent());
     } 
 
@@ -78,6 +88,7 @@ public class TerminalRoot : FrameworkRoot, IComposable, IRunnable, IShutdownable
             return;
 
         _miniGameStarted = true;
+        _startView.Close();
         _miniGamesService.StartGame();
     }
 
@@ -125,6 +136,8 @@ public class TerminalRoot : FrameworkRoot, IComposable, IRunnable, IShutdownable
 
         _victoryView.Dispose();
         _miniGamesService.Dispose();
+        _startView.Dispose();
+
     }
 }
 
