@@ -15,6 +15,8 @@ public sealed class MiniGamesService : IDisposable
     public MiniGamesService()
     {
         _currentGame = UnityEngine.Object.FindAnyObjectByType<MiniGame>();
+
+        _currentGame.Initialize(this);
         SubscribeToEvents();
     }
 

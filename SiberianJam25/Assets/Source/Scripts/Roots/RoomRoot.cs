@@ -21,7 +21,8 @@ public class RoomRoot : FrameworkRoot, IComposable,IShutdownable
     public void Compose()
     {
         _eventBus = Context.GetService<IEventBus>();
-        _sceneTransitionService = Context.Parent.GetService<SceneTransitionService>();
+        //if(Context.Parent.TryGetService<SceneTransitionService>(out SceneTransitionService sceneService))
+        //    _sceneTransitionService = sceneService;
 
         _door.Initialize(this, _eventBus);
         _doorTrigger.Initialize(this);
@@ -34,12 +35,15 @@ public class RoomRoot : FrameworkRoot, IComposable,IShutdownable
 
     public async Task TryLoadNextLevel()
     {
-        SceneTransitionResult result = await _sceneTransitionService.LoadSceneAsync(_nextLevelSceneName);
+        //if (_sceneTransitionService == null)
+        //    return;
 
-        if (!result.Success)
-        {
-            Debug.LogError( $"Failed to load scene: {result.Error}");
-        }
+        //SceneTransitionResult result = await _sceneTransitionService.LoadSceneAsync(_nextLevelSceneName);
+
+        //if (!result.Success)
+        //{
+        //    Debug.LogError( $"Failed to load scene: {result.Error}");
+        //}
 
     }
 
