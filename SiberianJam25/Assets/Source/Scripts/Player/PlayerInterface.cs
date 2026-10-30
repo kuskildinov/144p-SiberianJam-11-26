@@ -63,8 +63,7 @@ public class PlayerInterface : MonoBehaviour, IDisposable
     }
 
     private void OnInteractorLost(InteractorLostEvent eventData)
-    {
-        Debug.Log("“ут");
+    {       
         ToggleInteractionInfo(false);
     }
 

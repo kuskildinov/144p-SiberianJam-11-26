@@ -46,6 +46,9 @@ public class PlayerInteraction : MonoBehaviour, IDisposable
         {
             if (hit.transform.TryGetComponent<IInteractable>(out IInteractable interactable))
             {
+                if (!interactable.IsActive)
+                    return;
+
                 detectedInteractable = interactable;
             }
         }

@@ -4,6 +4,7 @@ using UnityEngine;
 using Unity.Cinemachine;
 
 [DependsOn(typeof(InputRoot))]
+[DependsOn(typeof(RoomRoot))]
 [DependsOn(typeof(EventBusRoot))]
 public class TerminalRoot : FrameworkRoot, IComposable, IRunnable, IShutdownable
 {    
@@ -11,11 +12,9 @@ public class TerminalRoot : FrameworkRoot, IComposable, IRunnable, IShutdownable
     [SerializeField] private ComputerTerminal _terminal;
     [SerializeField] private CinemachineCamera _terminalCam;
     [SerializeField] private MiniGameVictoryView _victoryView;
-    [Header("Room")]
-    [SerializeField] private string _doorCode = "4826";
-
+   
     private InputRoot _inputRoot;
-    
+    private RoomRoot _rootRoot;
     private IEventBus _eventBus;
     private MiniGamesService _miniGamesService;
 
@@ -23,12 +22,12 @@ public class TerminalRoot : FrameworkRoot, IComposable, IRunnable, IShutdownable
     private bool _miniGameStarted;
 
     public bool IsOpened => _isOpened;
-    public string DoorCode => _doorCode;
+    public string DoorCode => _rootRoot.DoorCode;
 
     public void Compose()
     {
         _inputRoot = Context.GetRoot<InputRoot>();
-
+        _rootRoot = Context.GetRoot<RoomRoot>();
         _miniGamesService = new MiniGamesService();
         Context.RegisterService<MiniGamesService>(_miniGamesService);
 
@@ -85,12 +84,12 @@ public class TerminalRoot : FrameworkRoot, IComposable, IRunnable, IShutdownable
     public void OnContinueClicked()
     {       
         CloseTerminal();
-        //_roomRoot.ActivateLock();
     }
 
     private void OnGameCompleted()
     {
         _victoryView.Open();
+        _eventBus.Publish(new GameCompleteEvent());
     }
 
     #endregion    
@@ -135,6 +134,11 @@ public readonly struct TerminalOpenEvent
 }
 
 public readonly struct TerminalCloseEvent
+{
+
+}
+
+public readonly struct GameCompleteEvent
 {
 
 }
