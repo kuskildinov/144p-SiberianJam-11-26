@@ -109,8 +109,7 @@ public class InputRoot : FrameworkRoot,IComposable,IRunnable, IShutdownable
     #region >>> MOUSE CURSOR
 
     private void ToggleCursor(bool value)
-    {
-        Debug.Log(value);
+    {       
         Cursor.lockState = value? CursorLockMode.None : CursorLockMode.Locked;
         Cursor.visible = value;
     }

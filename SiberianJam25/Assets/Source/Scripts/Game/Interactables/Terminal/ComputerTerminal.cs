@@ -2,9 +2,10 @@ using UnityEngine;
 
 public class ComputerTerminal : MonoBehaviour, IInteractable
 {
+    [SerializeField] private string _interactionText;
     private TerminalRoot _root;
 
-    public string InteractionText => "E Ч »спользовать терминал";
+    public string InteractionText => _interactionText;
 
     public void Initialize(TerminalRoot root)
     {

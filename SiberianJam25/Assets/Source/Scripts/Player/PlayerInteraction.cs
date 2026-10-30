@@ -1,6 +1,7 @@
 using System;
 using Unity.Cinemachine;
 using UnityEngine;
+using IcePiecesGames.Framework.Core.Events;
 
 public class PlayerInteraction : MonoBehaviour, IDisposable
 {
@@ -13,12 +14,14 @@ public class PlayerInteraction : MonoBehaviour, IDisposable
 
     private InputRoot _inputRoot;
 
+    private IEventBus _eventsBus;
     private IInteractable _currentInteractable;
 
-    public void Initialize(Player root, InputRoot inputRoot)
+    public void Initialize(Player root, InputRoot inputRoot,IEventBus eventBus)
     {
         _root = root;
         _inputRoot = inputRoot;
+        _eventsBus = eventBus;
 
         SubscrivbeToEvents();
     }
@@ -36,16 +39,18 @@ public class PlayerInteraction : MonoBehaviour, IDisposable
 
     private void FindInteractable()
     {
-        _currentInteractable = null;
+        IInteractable detectedInteractable = null;
 
         Ray ray = new Ray( _playerCam.transform.position, _playerCam.transform.forward);
-        if (Physics.Raycast( ray, out RaycastHit hit, _interactionDistance, _interactionMask, QueryTriggerInteraction.Ignore))
+        if (Physics.Raycast(ray, out RaycastHit hit, _interactionDistance, _interactionMask, QueryTriggerInteraction.Ignore))
         {
-           if(hit.transform.TryGetComponent<IInteractable>(out IInteractable interactable))
+            if (hit.transform.TryGetComponent<IInteractable>(out IInteractable interactable))
             {
-                _currentInteractable = interactable;              
+                detectedInteractable = interactable;
             }
         }
+
+        SetCurrentInteractable(detectedInteractable);
     }
 
     public void OnInteract()
@@ -56,9 +61,40 @@ public class PlayerInteraction : MonoBehaviour, IDisposable
         _currentInteractable?.Interact(_root);
     }
 
+    private void SetCurrentInteractable(IInteractable interactable)
+    {
+        // Объект не изменился
+        if (ReferenceEquals(_currentInteractable, interactable))
+            return;
+
+        // Потеряли предыдущий объект
+        if (_currentInteractable != null)
+        {
+            OnInteractorLost();
+        }
+
+        _currentInteractable = interactable;
+
+        // Обнаружили новый объект
+        if (_currentInteractable != null)
+        {
+            OnInteractorDetected(_currentInteractable);
+        }
+    }
+
+    private void OnInteractorDetected(IInteractable interactable)
+    {        
+        _eventsBus.Publish(new InteractiorDetectedEvent(_currentInteractable.InteractionText));
+    }
+
+    private void OnInteractorLost()
+    {      
+        _eventsBus.Publish(new InteractorLostEvent());
+    }
+
     private void ClearInteraction()
     {
-        _currentInteractable = null;
+        SetCurrentInteractable(null);
     }
 
     #region >>> EVENTS
@@ -77,6 +113,7 @@ public class PlayerInteraction : MonoBehaviour, IDisposable
    
     public void Dispose()
     {
+        ClearInteraction();
         UnsubscribeToEvents();
     }
 }

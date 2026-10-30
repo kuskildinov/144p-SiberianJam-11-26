@@ -8,6 +8,7 @@ using UnityEngine;
 public class PlayerRoot : FrameworkRoot, IComposable,IRunnable,IShutdownable
 {
     [SerializeField] private Player _player;
+    [SerializeField] private PlayerInterface _interface;
 
     private InputRoot _inputRoot;
 
@@ -20,7 +21,8 @@ public class PlayerRoot : FrameworkRoot, IComposable,IRunnable,IShutdownable
         _inputRoot = Context.GetRoot<InputRoot>();
         _eventBus = Context.GetService<IEventBus>();
 
-        _player.Initialize(this, _inputRoot);
+        _player.Initialize(this, _inputRoot, _eventBus);
+        _interface.Initialize(this, _eventBus);
     }
 
     public void Run()
@@ -28,6 +30,7 @@ public class PlayerRoot : FrameworkRoot, IComposable,IRunnable,IShutdownable
         SubscribeToEvents();
 
         _player.ToggleActivation(true);
+        _interface.ToggleVisibility(true);
     }
 
     #region >>> PLAYER
@@ -36,6 +39,14 @@ public class PlayerRoot : FrameworkRoot, IComposable,IRunnable,IShutdownable
     {
         _player.ToggleActivation(value);
     }
+    #endregion
+    #region >>> INTERFACE
+
+    private void ToggleInterfaceVisual(bool value)
+    {
+        _interface.ToggleVisibility(value);
+    }
+
     #endregion
     #region >>> EVENTS
 
@@ -59,11 +70,13 @@ public class PlayerRoot : FrameworkRoot, IComposable,IRunnable,IShutdownable
     private void OnTerminalOpend(TerminalOpenEvent eventData)
     {
         TogglePlayerActivation(false);
+        ToggleInterfaceVisual(false);
     }
 
     private void OnTerminalClosed(TerminalCloseEvent eventData)
     {
         TogglePlayerActivation(true);
+        ToggleInterfaceVisual(true);
     }
 
     #endregion
@@ -73,5 +86,21 @@ public class PlayerRoot : FrameworkRoot, IComposable,IRunnable,IShutdownable
         UnSubscribeToEvents();
 
         _player.Dispose();
+        _interface.Dispose();
     }
+}
+
+public readonly struct InteractiorDetectedEvent
+{
+    public readonly string InteractorInfo;
+
+    public InteractiorDetectedEvent(string interactorInfo)
+    {
+        InteractorInfo = interactorInfo;
+    }
+}
+
+public readonly struct InteractorLostEvent
+{
+
 }

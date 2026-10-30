@@ -1,6 +1,7 @@
 using UnityEngine;
 using Unity.Cinemachine;
 using System;
+using IcePiecesGames.Framework.Core.Events;
 
 [RequireComponent(typeof(CharacterController))]
 public class Player : MonoBehaviour, IDisposable
@@ -13,6 +14,9 @@ public class Player : MonoBehaviour, IDisposable
 
     private PlayerRoot _root;
     private InputRoot _inputRoot;
+
+    private IEventBus _eventBus;
+
     private bool _isActive;
     private CharacterController _controller;
 
@@ -20,25 +24,22 @@ public class Player : MonoBehaviour, IDisposable
     public CinemachineCamera PlayerCam => _playerCam;
     public CharacterController Controller => _controller;    
 
-    public void Initialize(PlayerRoot root, InputRoot inputRoot)
+    public void Initialize(PlayerRoot root, InputRoot inputRoot, IEventBus eventBus)
     {
         _root = root;
         _inputRoot = inputRoot;
+        _eventBus = eventBus;
+
         _controller = GetComponent<CharacterController>();
 
         _movment.Initialize(this, _inputRoot);
-        _interaction.Initialize(this, _inputRoot);
+        _interaction.Initialize(this, _inputRoot, _eventBus);
     }
 
     public void ToggleActivation(bool value)
     {
         _isActive = value;
     }
-
-    #region >>> INTERACTION
-
-
-    #endregion
 
     public void Dispose()
     {
