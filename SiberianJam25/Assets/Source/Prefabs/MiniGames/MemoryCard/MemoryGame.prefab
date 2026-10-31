@@ -324,7 +324,6 @@ MonoBehaviour:
   - {fileID: 1170953408, guid: 8a672e6af7296a04891d6b371f281516, type: 3}
   - {fileID: -767567476, guid: 8a672e6af7296a04891d6b371f281516, type: 3}
   _pairsText: {fileID: 8381524994512532849}
-  _attemptsText: {fileID: 8381524994512532849}
   _pairsCount: 6
   _hideDelay: 0.8
 --- !u!1 &2359360508140512311
@@ -558,7 +557,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\u041D\u0410\u0419\u0414\u0418 \u041F\u0410\u0420\u0423"
+  m_Text: "\u041D\u0410\u0419\u0414\u0418 "
 --- !u!1 &4309052454730844827
 GameObject:
   m_ObjectHideFlags: 0

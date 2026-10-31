@@ -1,11 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MemorySequenceGame : MiniGame
 {
     [Header("Buttons")]
     [SerializeField] private SequenceButtonView[] _buttons;
+    [SerializeField] private Button _beginButton; 
 
     [Header("Settings")]
     [SerializeField, Min(1)] private int _roundsToWin = 5;
@@ -29,13 +31,12 @@ public class MemorySequenceGame : MiniGame
             int index = i;
             _buttons[i].Initialize(() => OnButtonPressed(index));
         }
+
+        SubscribeToEvents();
     }
 
-    public override void StartGame()
+    public void StartRound()
     {
-        if (IsCompleted)
-            return;
-
         if (!_started)
         {
             _started = true;
@@ -44,7 +45,16 @@ public class MemorySequenceGame : MiniGame
         }
 
         _paused = false;
-        StartRoutine(ShowNextRound());
+        _beginButton.gameObject.SetActive(false);
+        StartRoutine(ShowNextRound());   
+    }
+
+    public override void StartGame()
+    {
+        if (IsCompleted)
+            return;
+
+        _beginButton.gameObject.SetActive(true);
     }
 
     public override void PauseGame()
@@ -56,6 +66,8 @@ public class MemorySequenceGame : MiniGame
 
         foreach (var button in _buttons)
             button.ResetVisual();
+
+        _beginButton.gameObject.SetActive(true);
     }
 
     private IEnumerator ShowNextRound()
@@ -96,8 +108,8 @@ public class MemorySequenceGame : MiniGame
 
         if (_sequence[_inputIndex] != index)
         {
-            _acceptingInput = false;
-            StartRoutine(RetryRound());
+            OnRoundFail();
+           
             return;
         }
 
@@ -114,7 +126,7 @@ public class MemorySequenceGame : MiniGame
             return;
         }
 
-        StartRoutine(ShowNextRound());
+        OnRoundComplete();
     }
 
     private IEnumerator RetryRound()
@@ -136,5 +148,45 @@ public class MemorySequenceGame : MiniGame
 
         StopCoroutine(_routine);
         _routine = null;
+    }
+
+    private void OnRoundComplete()
+    {
+        StartRoutine(ShowNextRound());
+    }
+
+    private void OnRoundFail()
+    {
+        _acceptingInput = false;
+        StartRoutine(RetryRound());
+    }
+
+    #region >>> EVETNS
+
+    private void SubscribeToEvents()
+    {
+        _beginButton.onClick.AddListener(OnBegineButtonClicked);
+    }
+
+    private void UnsubscribeToEvents()
+    {
+        _beginButton.onClick.RemoveListener(OnBegineButtonClicked);
+    }
+
+    private void OnBegineButtonClicked()
+    {
+        StartRound();
+    }
+
+    #endregion
+
+    private void OnDisable()
+    {
+        PauseGame();
+    }
+
+    private void OnDestroy()
+    {
+        UnsubscribeToEvents();
     }
 }

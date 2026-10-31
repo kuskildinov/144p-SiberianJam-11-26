@@ -13,6 +13,8 @@ public class PuzzlePieceInteractable : MonoBehaviour, IInteractable
     public void Initialize(PuzzleGame root)
     {
         _root = root;
+
+        ToggleVisual(false);
     }
 
     public void Interact(Player player)

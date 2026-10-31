@@ -35,7 +35,8 @@ public class PuzzleGame : MiniGame
         if (_started)
             return;
 
-        _started = true;        
+        _started = true;
+        TogglePiecesVisible(true);
     }
 
     public override void PauseGame()
@@ -82,5 +83,13 @@ public class PuzzleGame : MiniGame
             CompleteGame();
 
         return true;
+    }
+
+    public void TogglePiecesVisible(bool value)
+    {
+        foreach (PuzzlePieceInteractable interactable in _interactables)
+        {
+            interactable.ToggleVisual(value);
+        }
     }
 }
