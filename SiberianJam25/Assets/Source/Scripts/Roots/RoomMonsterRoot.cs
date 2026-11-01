@@ -14,7 +14,8 @@ public class RoomMonsterRoot : FrameworkRoot, IComposable, IRunnable, IShutdowna
 
     public void Compose()
     {
-        _monster.Initialize(this);
+        if (_monster != null)
+            _monster.Initialize(this);
 
         _eventBus = Context.GetService<IEventBus>();
     }
@@ -50,19 +51,22 @@ public class RoomMonsterRoot : FrameworkRoot, IComposable, IRunnable, IShutdowna
 
     private void OnTerminalOpend(TerminalOpenEvent eventData)
     {
-        _monster.StartMoving();
+        if (_monster != null)
+            _monster.StartMoving();
     }
 
     private void OnTerminalClosed(TerminalCloseEvent eventData)
     {
-        _monster.StopMoving();
+        if (_monster != null)
+            _monster.StopMoving();
     }    
 
     #endregion
 
     public void Shutdown()
     {
-        _monster.ResetMonster();
+        if(_monster != null)
+            _monster.ResetMonster();
 
         UnSubscribeToEvents();
     }

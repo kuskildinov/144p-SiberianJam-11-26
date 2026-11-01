@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.icepiecesgames.framework.audio": "https://github.com/kuskildinov/IcePiecesGames-Unity-Framework.git?path=/Packages/com.icepiecesgames.framework.audio#audio-v0.1.0",
     "com.icepiecesgames.framework.core": "https://github.com/kuskildinov/IcePiecesGames-Unity-Framework.git?path=/Packages/com.icepiecesgames.framework.core#framework-v0.10.0",
     "com.unity.2d.sprite": "1.0.0",
     "com.unity.ai.navigation": "2.0.12",

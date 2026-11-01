@@ -44,6 +44,7 @@ public class TerminalStartView : MonoBehaviour,IDisposable
     private void OnStartButtonClicked()
     {
         _root.TryStartMiniGame();
+        _root.PlayTerminalButtonSound();
     }
 
     public void Dispose()

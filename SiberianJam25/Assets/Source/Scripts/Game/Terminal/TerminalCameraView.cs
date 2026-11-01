@@ -8,7 +8,9 @@ public class TerminalCameraView : MonoBehaviour,IDisposable
     [SerializeField] private Button _openButton;
     [SerializeField] private Button _backButton;
 
-    public void Initialize()
+    private TerminalRoot _root;
+
+    public void Initialize(TerminalRoot root)
     {
         SubscribeToEvetns();
     }
@@ -41,11 +43,13 @@ public class TerminalCameraView : MonoBehaviour,IDisposable
     private void OnOpenButtonClicked()
     {
         Open();
+        _root.PlayTerminalButtonSound();
     }
 
     private void OnBackButtonClicked()
     {
         Close();
+        _root.PlayTerminalButtonSound();
     }
 
     #endregion
@@ -53,7 +57,5 @@ public class TerminalCameraView : MonoBehaviour,IDisposable
     public void Dispose()
     {
         UnsubscribeToEvents();
-    }
-
-    
+    }    
 }

@@ -17,6 +17,7 @@ public class MemorySequenceGame : MiniGame
 
     private readonly List<int> _sequence = new();
 
+    private MiniGamesService _gameService;
     private Coroutine _routine;
     private int _inputIndex;
     private bool _started;
@@ -24,8 +25,10 @@ public class MemorySequenceGame : MiniGame
     private bool _paused;
     private int _generation;
 
-    public override void Initialize(MiniGamesService controller)
+    public override void Initialize(MiniGamesService gameService)
     {
+        _gameService = gameService;
+
         for (int i = 0; i < _buttons.Length; i++)
         {
             int index = i;
@@ -158,6 +161,7 @@ public class MemorySequenceGame : MiniGame
     private void OnRoundFail()
     {
         _acceptingInput = false;
+        _gameService.PlayIncorrectSound();
         StartRoutine(RetryRound());
     }
 

@@ -1,5 +1,14 @@
 {
   "dependencies": {
+    "com.icepiecesgames.framework.audio": {
+      "version": "https://github.com/kuskildinov/IcePiecesGames-Unity-Framework.git?path=/Packages/com.icepiecesgames.framework.audio#audio-v0.1.0",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.icepiecesgames.framework.core": "0.9.0"
+      },
+      "hash": "01ca82e814f243c31359b480544633ebf21e34fa"
+    },
     "com.icepiecesgames.framework.core": {
       "version": "https://github.com/kuskildinov/IcePiecesGames-Unity-Framework.git?path=/Packages/com.icepiecesgames.framework.core#framework-v0.10.0",
       "depth": 0,

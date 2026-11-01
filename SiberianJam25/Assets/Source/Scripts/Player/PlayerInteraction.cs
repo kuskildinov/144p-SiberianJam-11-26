@@ -17,6 +17,8 @@ public class PlayerInteraction : MonoBehaviour, IDisposable
     private IEventBus _eventsBus;
     private IInteractable _currentInteractable;
 
+    private bool _isDisposed;
+
     public void Initialize(Player root, InputRoot inputRoot,IEventBus eventBus)
     {
         _root = root;
@@ -28,6 +30,9 @@ public class PlayerInteraction : MonoBehaviour, IDisposable
 
     private void Update()
     {
+        if (_isDisposed)
+            return;
+
         if (!_root.IsActive)
         {
             ClearInteraction();
@@ -116,6 +121,11 @@ public class PlayerInteraction : MonoBehaviour, IDisposable
    
     public void Dispose()
     {
+        if (_isDisposed)
+            return;
+        _isDisposed = true;
+        enabled = false;
+
         ClearInteraction();
         UnsubscribeToEvents();
     }

@@ -53,6 +53,7 @@ public class MiniGameVictoryView : MonoBehaviour
     private void OnContinueButtonClicked()
     {
         _root.OnContinueClicked();
+        _root.PlayTerminalButtonSound();
     }
 
     #endregion

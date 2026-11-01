@@ -113,13 +113,15 @@ public class MemoryGame : MiniGame
         {
             _firstCard.SetMatched();
             _secondCard.SetMatched();
-
+           
             _matchedPairs++;
         }
         else
         {
             _firstCard.Hide();
             _secondCard.Hide();
+            _gamesService.PlayFlipCardSound();
+            _gamesService.PlayIncorrectSound();
         }
 
         _firstCard = null;
@@ -154,9 +156,11 @@ public class MemoryGame : MiniGame
             return;
 
         card.Reveal();
+        _gamesService.PlayFlipCardSound();
 
         if (_firstCard == null)
         {
+           
             _firstCard = card;
             return;
         }

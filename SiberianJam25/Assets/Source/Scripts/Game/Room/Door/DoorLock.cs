@@ -10,6 +10,8 @@ public class DoorLock : MonoBehaviour
 
     [SerializeField] private Text _currentCodeText;
     [SerializeField] private LockButton[] _buttons;
+    [SerializeField] private AudioSource _buttonsSource;
+    [SerializeField] private AudioClip _buttonSound;
 
     private RoomDoor _door;
 
@@ -27,7 +29,8 @@ public class DoorLock : MonoBehaviour
     {
         if (_currentState != DoorLockState.Active)
             return;
-        
+
+        _buttonsSource.PlayOneShot(_buttonSound);
         TryAddCode(num);
     }
 

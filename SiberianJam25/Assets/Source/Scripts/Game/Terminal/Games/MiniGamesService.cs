@@ -4,6 +4,8 @@ public sealed class MiniGamesService : IDisposable
 {
     private readonly MiniGame _currentGame;
 
+    private TerminalRoot _root;
+
     private bool _started;
     private bool _completed;
     private bool _disposed;
@@ -12,10 +14,10 @@ public sealed class MiniGamesService : IDisposable
 
     public event Action Completed;
 
-    public MiniGamesService()
+    public MiniGamesService(TerminalRoot root)
     {
         _currentGame = UnityEngine.Object.FindAnyObjectByType<MiniGame>();
-
+        _root = root;
         _currentGame.Initialize(this);
         SubscribeToEvents();
     }
@@ -43,6 +45,16 @@ public sealed class MiniGamesService : IDisposable
     {
         if (_disposed)
             throw new ObjectDisposedException(nameof(MiniGamesService));
+    }
+
+    public void PlayIncorrectSound()
+    {
+        _root.PlayIncorrectSound();
+    }
+
+    public void PlayFlipCardSound()
+    {
+        _root.PlayFlipCardSound();
     }
 
     #region >>> EVENTS

@@ -10,6 +10,9 @@ public class CCTVController : MonoBehaviour
    
     public void Initialize()
     {
+        if (_cctvCamera == null)
+            return;
+        
         _cctvCamera.targetTexture = _renderTexture;
 
         if (_cameraImage != null)
@@ -19,12 +22,14 @@ public class CCTVController : MonoBehaviour
     }
 
     public void Activate()
-    {              
-        _cctvCamera.enabled = true;
+    {
+        if (_cctvCamera != null)
+            _cctvCamera.enabled = true;
     }
 
     public void Deactivate()    {
        
-        _cctvCamera.enabled = false;
+        if(_cctvCamera != null)
+            _cctvCamera.enabled = false;
     }
 }

@@ -1,3 +1,4 @@
+using IcePiecesGames.Framework.Audio;
 using IcePiecesGames.Framework.Core.Events;
 using System;
 using UnityEngine;
@@ -18,7 +19,9 @@ public class PlayerInterface : MonoBehaviour, IDisposable
     {
         _root = root;
         _eventBus = eventBus;
-        _gameOverPanel.Initialize(roomRoot);
+
+        if (_gameOverPanel != null) 
+            _gameOverPanel.Initialize(roomRoot);
 
         ToggleInteractionInfo(false);
         SubscribeToEvents();
@@ -43,7 +46,8 @@ public class PlayerInterface : MonoBehaviour, IDisposable
 
     public void OnGameOver()
     {
-        _gameOverPanel.Open();
+        if (_gameOverPanel != null) 
+            _gameOverPanel.Open();
     }
 
     #endregion
@@ -83,6 +87,7 @@ public class PlayerInterface : MonoBehaviour, IDisposable
     {
         UnsubscribeFromEvents();
 
-        _gameOverPanel.Dispose();
+        if(_gameOverPanel != null)
+            _gameOverPanel.Dispose();
     }
 }
