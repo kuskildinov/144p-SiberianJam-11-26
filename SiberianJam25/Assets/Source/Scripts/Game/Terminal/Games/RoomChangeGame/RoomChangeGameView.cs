@@ -37,15 +37,9 @@ public class RoomChangeGameView : MonoBehaviour
     private void Refresh()
     {
         bool started = _game.ProcedureStarted;
-
         _startButton.gameObject.SetActive(!started);
-
-        _statusText.text = started
-            ? "Найдите изменения в помещении"
-            : "Осмотрите помещение перед проверкой";
-
-        _progressText.text =
-            $"{_game.FoundCount}/{_game.ChangesCount}";
+        _statusText.text = started ? "Найдите изменения в помещении" : "Осмотрите помещение перед проверкой";
+        _progressText.text = $"{_game.FoundCount}/{_game.ChangesCount}";
     }
 
     private void OnDestroy()

@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -32,6 +31,7 @@ public class RoomChangeGame : MiniGame
 
             obj.Initialize(this);
             obj.SetChanged(false);
+            obj.IsActive = false;
         }
     }
 
@@ -66,15 +66,14 @@ public class RoomChangeGame : MiniGame
 
         for (int i = 0; i < count; i++)
         {
-            int randomIndex = UnityEngine.Random.Range(
-                0, candidates.Count
-            );
+            int randomIndex = UnityEngine.Random.Range(0, candidates.Count);
 
             ChangeableObject selected = candidates[randomIndex];
             candidates.RemoveAt(randomIndex);
 
             _changedObjects.Add(selected);
             selected.SetChanged(true);
+            selected.IsActive = true;
         }
 
         ProcedureStartedEvent?.Invoke();
@@ -93,11 +92,10 @@ public class RoomChangeGame : MiniGame
             return;
 
         obj.SetFound(true);
+        obj.SetChanged(false);
+        obj.IsActive = false;
 
-        ProgressChanged?.Invoke(
-            _foundObjects.Count,
-            _changedObjects.Count
-        );
+        ProgressChanged?.Invoke(_foundObjects.Count,_changedObjects.Count);
 
         if (_foundObjects.Count >= _changedObjects.Count)
             CompleteGame();
