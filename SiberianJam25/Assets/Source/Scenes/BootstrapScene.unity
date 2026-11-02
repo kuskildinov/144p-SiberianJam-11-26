@@ -840,7 +840,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2ca18867a3ddc445bb6d241dc44edbd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: IcePiecesGames.Framework.Core::GameStartup
-  _nextScene: Level_1
+  _nextScene: MainMenu
   _logoSequence: {fileID: 253026856}
 --- !u!1 &1501869902
 GameObject:

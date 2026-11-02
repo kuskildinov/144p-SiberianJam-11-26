@@ -15,6 +15,10 @@ public class MemorySequenceGame : MiniGame
     [SerializeField] private float _pauseBetweenFlashes = 0.2f;
     [SerializeField] private float _roundDelay = 0.7f;
 
+    [Header("Sounds")]
+    [SerializeField] private AudioSource _source;
+    [SerializeField] private AudioClip _pingSound;
+
     private readonly List<int> _sequence = new();
 
     private MiniGamesService _gameService;
@@ -92,6 +96,7 @@ public class MemorySequenceGame : MiniGame
         foreach (int index in _sequence)
         {
             _buttons[index].LightUp(_flashDuration);
+            _source.PlayOneShot(_pingSound);
 
             yield return new WaitForSeconds(
                 _flashDuration + _pauseBetweenFlashes

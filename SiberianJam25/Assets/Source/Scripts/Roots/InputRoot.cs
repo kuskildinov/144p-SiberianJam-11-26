@@ -28,6 +28,7 @@ public class InputRoot : FrameworkRoot,IComposable,IRunnable, IShutdownable
 
     public event Action Interacted;
     public event Action TerminalExited;
+    public event Action OpenPaused;
     public event Action NextCamera;
     public event Action PreviousCamera;
 
@@ -91,7 +92,10 @@ public class InputRoot : FrameworkRoot,IComposable,IRunnable, IShutdownable
 
     private void OnExit(InputAction.CallbackContext context)
     {
-        TerminalExited?.Invoke();
+        if (CurrentMode == InputMode.Terminal)
+            TerminalExited?.Invoke();
+        else
+            OpenPaused?.Invoke();
     }
        
     #region >>> MOUSE CURSOR

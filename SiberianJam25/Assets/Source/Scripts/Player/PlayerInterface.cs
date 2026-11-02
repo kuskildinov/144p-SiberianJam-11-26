@@ -8,6 +8,7 @@ public class PlayerInterface : MonoBehaviour, IDisposable
     [SerializeField] private GameObject _panel;
     [SerializeField] private InteractionInfoPanel _interactionInfo;
     [SerializeField] private GameOverPanel _gameOverPanel;
+    [SerializeField] private PausePanel _pausePanel;
 
     private PlayerRoot _root;
 
@@ -22,6 +23,9 @@ public class PlayerInterface : MonoBehaviour, IDisposable
 
         if (_gameOverPanel != null) 
             _gameOverPanel.Initialize(roomRoot);
+
+        if (_pausePanel != null)
+            _pausePanel.Initialize(roomRoot);
 
         ToggleInteractionInfo(false);
         SubscribeToEvents();
@@ -48,6 +52,22 @@ public class PlayerInterface : MonoBehaviour, IDisposable
     {
         if (_gameOverPanel != null) 
             _gameOverPanel.Open();
+    }
+
+    #endregion
+    #region >>> PAUSE
+
+    public void TogglePausePanel(bool value)
+    {
+        Debug.Log(value);
+        if(value)
+        {
+            _pausePanel.Open();
+        }
+        else
+        {
+            _pausePanel.Close();
+        }
     }
 
     #endregion

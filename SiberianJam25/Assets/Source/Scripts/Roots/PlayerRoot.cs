@@ -19,6 +19,8 @@ public class PlayerRoot : FrameworkRoot, IComposable,IRunnable,IShutdownable
     private InputRoot _inputRoot;
     private RoomRoot _roomRoot;
 
+    private bool _isPause = false;
+
     private IEventBus _eventBus;
     private IAudioService _audioService;
 
@@ -46,7 +48,8 @@ public class PlayerRoot : FrameworkRoot, IComposable,IRunnable,IShutdownable
 
         _player.ToggleActivation(true);
         _interface.ToggleVisibility(true);
-               
+
+        Time.timeScale = 1f;
         _fade.FadeOut(5f);
     }
 
@@ -77,6 +80,8 @@ public class PlayerRoot : FrameworkRoot, IComposable,IRunnable,IShutdownable
             _gameOverSubscription = _eventBus.Subscribe<PlayerCaughtEvent>(OnGameOver);
         if (_gameFinalSubscription == null)
             _gameFinalSubscription = _eventBus.Subscribe<GameFinalEvent>(OnGameFinal);
+
+        _inputRoot.OpenPaused += OnPauseButtonClicked;
     }
 
     private void UnSubscribeToEvents()
@@ -92,6 +97,8 @@ public class PlayerRoot : FrameworkRoot, IComposable,IRunnable,IShutdownable
 
         _gameFinalSubscription?.Dispose();
         _gameFinalSubscription = null;
+
+        _inputRoot.OpenPaused += OnPauseButtonClicked;
     }
 
     private void OnTerminalOpend(TerminalOpenEvent eventData)
@@ -117,6 +124,27 @@ public class PlayerRoot : FrameworkRoot, IComposable,IRunnable,IShutdownable
     private void OnGameFinal(GameFinalEvent eventData)
     {
         TogglePlayerActivation(false);
+    }
+
+    private void OnPauseButtonClicked()
+    {
+        Debug.Log("Test");
+        if (_isPause)
+        {
+            Time.timeScale = 1f;
+            _isPause = false;
+            TogglePlayerActivation(true);
+
+            _interface.TogglePausePanel(false);
+        }
+        else
+        {
+            Time.timeScale = 0f;
+            _isPause = true;
+            TogglePlayerActivation(false);
+
+            _interface.TogglePausePanel(true);
+        }
     }
 
     #endregion

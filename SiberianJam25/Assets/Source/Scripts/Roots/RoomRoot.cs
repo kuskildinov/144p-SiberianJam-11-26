@@ -46,6 +46,11 @@ public class RoomRoot : FrameworkRoot, IComposable,IRunnable, IShutdownable
           
     }
 
+    public async Task BackToMainMenu()
+    {
+        await LoadScene("MainMenu");
+    }
+
     public async Task TryLoadNextLevel()
     {
         await LoadScene(_nextLevelSceneName);
